@@ -5,12 +5,15 @@ import {
     UPDATE_LIST,
     UPDATE_ITEM,
     DELETE_ITEM,
+    ADD_NEW_LIST
 } from './Dashboard.actionTypes';
 import { getListDataSucess } from './Dashboard.actions';
 import { listData, items, listOrder } from '../initial-data';
 
 let min = 20;
-let max = 2000;
+let max = 100;
+let listmin = 5;
+let listmax = 10;
 
 const getData = () => {
     return { listData, items, listOrder };
@@ -34,7 +37,12 @@ export function* getListData() {
     yield put(getListDataSucess(getData()));
 }
 
-export function* updateListSequence(newSequence) {
+export function* updateListSequence(action) {
+    const { listId, newSequence} = action;
+    let state = yield select();
+    let data = Object.assign(state.dashboardData.dashboardData);
+    data.listData[listId].sequence = newSequence;
+    yield put(getListDataSucess(data));
 }
 
 export function* updateList(action) {
@@ -53,7 +61,7 @@ export function* updateList(action) {
 export function* updateItem(action) {
     const { itemId, updatedData } = action;
     let state = yield select();
-    let data = state.dashboardData.dashboardData;
+    let data = Object.assign(state.dashboardData.dashboardData);
     let items = data.items;
     items[itemId].title = updatedData.title;
     items[itemId].desc = updatedData.desc;
@@ -70,6 +78,19 @@ export function* deleteItem(action) {
     // better but due to time limits making it hard-coded
     let updatedData = deleteItemFromList(data, itemId);
     yield put(getListDataSucess(updatedData));
+}
+
+export function* addNewList(action){
+    const { newData } = action;
+    let state = yield select();
+    let data = Object.assign(state.dashboardData.dashboardData);
+    let listData = data.listData;
+    const newListId = Math.round(Math.random() * (listmax - listmin) + listmin);
+    listmax = listmax + newListId;
+    listmin = listmin + newListId;
+    listData['list'+newListId] = {title: newData.title, sequence: []};
+    data.listOrder.listOrder.push('list'+newListId);
+    yield put(getListDataSucess(data));
 }
 
 function* watchGetList() {
@@ -93,12 +114,17 @@ function* watchDeleteItem() {
 
 }
 
+function* watchAddList(){
+    yield takeEvery(ADD_NEW_LIST, addNewList);
+}
+
 export default function* DashboardSaga() {
     yield all([
         fork(watchGetList),
         fork(watchUpdateListSequence),
         fork(watchUpdateList),
         fork(watchUpdateItem),
-        fork(watchDeleteItem)
+        fork(watchDeleteItem),
+        fork(watchAddList)
     ])
 }

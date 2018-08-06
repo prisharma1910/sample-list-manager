@@ -4,7 +4,8 @@ import {
     UPDATE_LIST,
     UPDATE_ITEM,
     DELETE_ITEM,
-    GET_LIST_DATA_SUCCESS
+    GET_LIST_DATA_SUCCESS,
+    ADD_NEW_LIST
 } from './Dashboard.actionTypes';
 
 export function getInitialData(){
@@ -13,9 +14,10 @@ export function getInitialData(){
     }
 }
 
-export function updateListSequence(newSequence){
+export function updateListSequence(listId, newSequence){
     return {
         type: UPDATE_LIST_SEQUENCE,
+        listId,
         newSequence
     }
 }
@@ -47,5 +49,12 @@ export function getListDataSucess(data){
     return {
         type: GET_LIST_DATA_SUCCESS,
         data
+    }
+}
+
+export function addNewList(newData){
+    return {
+        type: ADD_NEW_LIST,
+        newData
     }
 }

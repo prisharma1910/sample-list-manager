@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getInitialData, updateListSequence, updateList, updateItem, deleteItem } from './Dashboard.actions';
+import { DragDropContext } from 'react-beautiful-dnd';
+
+import { default as ItemOptions } from './components/ItemOptions';
+import { getInitialData, updateListSequence, updateList, updateItem, deleteItem, addNewList } from './Dashboard.actions';
 import { default as List } from './components/List';
 import './Dashboard.css';
 
@@ -8,10 +11,46 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.getListItems = this.getListItems.bind(this);
+        this.onDragEnd = this.onDragEnd.bind(this);
+        this.toggleAdd = this.toggleAdd.bind(this);
+        this.saveNewList = this.saveNewList.bind(this);
+        this.state = {addList: false};
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.getInitialList();
+    }
+
+    toggleAdd(){
+        this.setState({
+            addList: !this.state.addList
+        })
+    }
+
+    saveNewList(data){
+        this.props.addList(data);
+        this.toggleAdd();
+    }
+
+    onDragEnd(result) {
+        let sourceList = result.source.droppableId;
+        let targetList = result.destination.droppableId;
+        let itemId = result.draggableId;
+        let sourcePos = result.source.index;
+        let targetPos = result.destination.index;
+        if (sourceList === targetList) {
+            let newSequence = this.props.list[sourceList].sequence;
+            newSequence.splice(sourcePos, 1);
+            newSequence.splice(targetPos, 0, itemId);
+            this.props.updateListItemSeq(sourceList, newSequence);
+        } else {
+            let sourceListNewSeq = this.props.list[sourceList].sequence;
+            sourceListNewSeq.splice(sourcePos, 1);
+            let targetListNewSeq = this.props.list[targetList].sequence;
+            targetListNewSeq.splice(targetPos, 0, itemId);
+            this.props.updateListItemSeq(sourceList, sourceListNewSeq);
+            this.props.updateListItemSeq(targetList, targetListNewSeq);
+        }
     }
 
     getListItems(itemSequence) {
@@ -26,7 +65,7 @@ class Dashboard extends React.Component {
     render() {
         const { list, listOrder } = this.props;
         const listJsx = [];
-        if(listOrder){
+        if (listOrder) {
             listOrder.forEach((listId, id) => {
                 listJsx.push(<List
                     key={listId}
@@ -40,9 +79,24 @@ class Dashboard extends React.Component {
             });
         }
         return (
-            <div className="container">
-                {listJsx}
-            </div>
+            <React.Fragment>
+                <header className="App-header">
+                    <h1 className="App-title">Welcome to List Manager</h1>
+                    {this.state.addList ?
+                    <ItemOptions
+                        primaryAction={this.saveNewList}
+                        primaryActionText={"Save"}
+                        onCancel={this.toggleAdd}
+                    /> :
+                    <button onClick={this.toggleAdd}>Add List</button>
+                }
+                </header>
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                    <div className="container">
+                        {listJsx}
+                    </div>
+                </DragDropContext>
+            </React.Fragment>
         )
     }
 }
@@ -61,8 +115,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         getInitialList: () => {
             dispatch(getInitialData())
         },
-        updateListSeq: (newSequence) => {
-            dispatch(updateListSequence(newSequence))
+        updateListItemSeq: (listId, newSequence) => {
+            dispatch(updateListSequence(listId, newSequence))
         },
         addItemOnList: (listId, updatedData) => {
             dispatch(updateList(listId, updatedData))
@@ -72,6 +126,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         },
         deleteItem: (listId, itemId) => {
             dispatch(deleteItem(listId, itemId))
+        },
+        addList: (listData) => {
+            dispatch(addNewList(listData))
         }
     }
 }

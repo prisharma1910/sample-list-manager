@@ -25,7 +25,6 @@
   .item{
     display: flex;
     flex-direction: column;
-    flex-grow:1;
     border-style: ridge;
     border-color: #f2f2f4;
     max-width: 20em;
@@ -46,6 +45,7 @@
   
   .add-list-btn{
     margin-top: 0.5rem;
+    margin-bottom: 1em;
     max-width: 10em;
   }
 

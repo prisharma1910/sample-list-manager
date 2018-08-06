@@ -1,4 +1,6 @@
 import React from 'react';
+import { Draggable } from 'react-beautiful-dnd';
+
 import { default as ItemOptions } from './ItemOptions';
 
 export default class Item extends React.Component {
@@ -30,26 +32,38 @@ export default class Item extends React.Component {
 
 
     render() {
-        const { itemData } = this.props;
+        const { itemData, index } = this.props;
 
         return (
-            <div className="item">
-                <span className="item-title">{itemData.title} </span>
-                <span className="item-desc">{itemData.desc}</span>
-                {this.state.showEdit ?
-                    <ItemOptions
-                        key={itemData.itemId}
-                        title={itemData.title}  
-                        description={itemData.desc}
-                        primaryAction={this.updateItem}
-                        secondaryAction={this.onDeleteItem}
-                        primaryActionText={"Save"}
-                        secondaryActionText={"Delete"}
-                        onCancel={this.toggleEdit}
-                    /> :
-                    <button onClick={this.toggleEdit} className="edit-item-btn">edit</button>
-                }
-            </div>
+            <Draggable
+                key={itemData.itemId}
+                draggableId={itemData.itemId}
+                index={index}
+            >
+                {(provided) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.dragHandleProps}
+                        {...provided.draggableProps}
+                        className="item"
+                    >
+                        <span className="item-title">{itemData.title} </span>
+                        <span className="item-desc">{itemData.desc}</span>
+                        {this.state.showEdit ?
+                            <ItemOptions
+                                key={itemData.itemId}
+                                title={itemData.title}
+                                description={itemData.desc}
+                                primaryAction={this.updateItem}
+                                secondaryAction={this.onDeleteItem}
+                                primaryActionText={"Save"}
+                                secondaryActionText={"Delete"}
+                                onCancel={this.toggleEdit}
+                            /> :
+                            <button onClick={this.toggleEdit} className="edit-item-btn">edit</button>
+                        }
+                    </div>)}
+            </Draggable>
         )
     }
 }

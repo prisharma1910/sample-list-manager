@@ -1,6 +1,7 @@
 import React from 'react';
 import { default as Item } from './Item';
 import { default as ItemOptions } from './ItemOptions';
+import { Droppable } from 'react-beautiful-dnd';
 
 export default class List extends React.Component {
     constructor(props) {
@@ -24,18 +25,25 @@ export default class List extends React.Component {
     }
 
     render() {
-        const { listData, getItems, onUpdateItem, onDeleteItem } = this.props;
+        const { listData, getItems, onUpdateItem, onDeleteItem, listId } = this.props;
         const itemJsx = [];
         const items = getItems();
         items.forEach((item, id) => {
-            itemJsx.push(<Item key={id} itemData={item} onUpdateItem={onUpdateItem} onDeleteItem={onDeleteItem} />)
+            itemJsx.push(<Item key={id} index={id} itemData={item} onUpdateItem={onUpdateItem} onDeleteItem={onDeleteItem} />)
         });
         return (
             <div className="list">
                 <span className="list-title"><b>{listData.title}</b></span>
-                <div>
-                    {itemJsx}
-                </div>
+                <Droppable droppableId={listId}>
+                    {(provided) => (
+                        <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className="list"
+                        >
+                            {itemJsx}
+                        </div>)}
+                </Droppable>
                 {this.state.showAdd ?
                     <ItemOptions
                         primaryAction={this.addItem}

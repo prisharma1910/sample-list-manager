@@ -15,9 +15,6 @@ sagaMiddleware.run(DashboardSaga)
 render(
   <Provider store={store}>
     <div className="App">
-      <header className="App-header">
-        <h1 className="App-title">Welcome to List Manager</h1>
-      </header>
         <Dashboard />
     </div>
   </Provider>,
