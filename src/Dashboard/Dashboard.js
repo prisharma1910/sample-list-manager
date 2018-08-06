@@ -34,16 +34,16 @@ class Dashboard extends React.Component {
 
     onDragEnd(result) {
         let sourceList = result.source.droppableId;
-        let targetList = result.destination.droppableId;
+        let targetList = result.destination ? result.destination.droppableId : null;
         let itemId = result.draggableId;
         let sourcePos = result.source.index;
-        let targetPos = result.destination.index;
+        let targetPos = result.destination && result.destination.index;
         if (sourceList === targetList) {
             let newSequence = this.props.list[sourceList].sequence;
             newSequence.splice(sourcePos, 1);
             newSequence.splice(targetPos, 0, itemId);
             this.props.updateListItemSeq(sourceList, newSequence);
-        } else {
+        } else if(targetList) {
             let sourceListNewSeq = this.props.list[sourceList].sequence;
             sourceListNewSeq.splice(sourcePos, 1);
             let targetListNewSeq = this.props.list[targetList].sequence;
