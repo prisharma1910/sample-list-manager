@@ -25,7 +25,7 @@ updateDesc(e){
 
     render() {
         return (
-            <div>
+            <div className="add-modal">
                 <input value={this.state.title} onChange={this.updateText} />
                 <input value={this.state.desc} onChange={this.updateDesc} />
                 <button onClick={() => this.props.primaryAction(this.state)}> {this.props.primaryActionText} </button>

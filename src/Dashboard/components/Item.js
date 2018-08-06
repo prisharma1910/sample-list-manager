@@ -49,6 +49,7 @@ export default class Item extends React.Component {
                     >
                         <span className="item-title">{itemData.title} </span>
                         <span className="item-desc">{itemData.desc}</span>
+                        {provided.placeholder}
                         {this.state.showEdit ?
                             <ItemOptions
                                 key={itemData.itemId}

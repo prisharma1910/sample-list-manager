@@ -81,7 +81,7 @@ class Dashboard extends React.Component {
         return (
             <React.Fragment>
                 <header className="App-header">
-                    <h1 className="App-title">Welcome to List Manager</h1>
+                    <span className="board-title">Welcome to List Manager</span>
                     {this.state.addList ?
                     <ItemOptions
                         primaryAction={this.saveNewList}

@@ -1,3 +1,7 @@
+.App-header {
+  margin: 1em 0 2em 1em;
+}
+
 .container {
     display: flex;
     flex-direction: row ;
@@ -53,4 +57,18 @@
     max-width: 10em;
     align-self: flex-end;
     margin-right: 0.3em;
+  }
+
+  .add-modal{
+    padding : 0.5em;
+  }
+
+  .add-modal input, .add-modal button{
+    margin-left : 0.5em;
+    margin-top: 0.3em;
+  }
+
+  .board-title{
+    font-size: x-large;
+    margin: 0 1em 0 0;
   }
